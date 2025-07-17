@@ -1,0 +1,40 @@
+# AGV Fleet Commander - Requirements
+# Sistema Inteligente de Gestión de Flota AGV
+
+# Web Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# OpenAI Integration
+openai==1.3.7
+
+# Data Processing
+pandas==2.1.3
+numpy==1.24.3
+
+# HTTP Requests
+httpx==0.25.2
+requests==2.31.0
+
+# Validation & Serialization
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# Date & Time
+python-dateutil==2.8.2
+
+# Development & Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+
+# Logging & Monitoring
+structlog==23.2.0
+
+# Environment Variables
+python-dotenv==1.0.0
+
+# CORS Support
+python-multipart==0.0.6
+
+# Additional utilities
+typing-extensions==4.8.0
