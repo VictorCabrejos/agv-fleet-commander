@@ -1,5 +1,7 @@
 # 🤖 AGV Fleet Commander
 
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect%20with%20Victor-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/victorcabrejos/)
+
 ## Sistema Inteligente de Gestión de Flota AGV
 **Puerto de Chancay • Arquitectura Hexagonal + IA**
 
