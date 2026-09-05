@@ -4,7 +4,7 @@ The FastAPI layer translates HTTP input into domain entities. Domain services
 depend only on abstract ports. Adapters implement CSV persistence,
 notifications, route construction, and analytics.
 
-\`\`\`mermaid
+```mermaid
 flowchart TB
     HTTP[FastAPI routes] --> ORCH[FleetOrchestrationService]
     HTTP --> CONTROL[AGVControlService]
@@ -17,8 +17,8 @@ flowchart TB
     ANALYTICS --> SUMMARY[HeuristicAnalytics]
     ROUTE -. optional .-> OPENAI[OpenAI adapter]
     ANALYTICS -. optional .-> OPENAI
-\`\`\`
+```
 
 The default composition is offline and deterministic. Setting
-\`OPENAI_API_KEY\` selects the optional provider adapters at application startup.
+`OPENAI_API_KEY` selects the optional provider adapters at application startup.
 No production control or safety layer is implemented.

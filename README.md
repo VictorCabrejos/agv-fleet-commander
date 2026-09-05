@@ -14,7 +14,7 @@ can be supplied without coupling the domain to a vendor SDK.
 
 ## Architecture
 
-\`\`\`mermaid
+```mermaid
 flowchart LR
     API[FastAPI] --> S[Domain services]
     S --> P[Ports]
@@ -22,7 +22,7 @@ flowchart LR
     P --> H[Offline heuristic adapters]
     P --> O[Optional OpenAI adapters]
     P --> N[Logging notification adapter]
-\`\`\`
+```
 
 See [docs/architecture.md](docs/architecture.md) and
 [docs/adr/0001-domain-first-routing.md](docs/adr/0001-domain-first-routing.md).
@@ -31,33 +31,33 @@ See [docs/architecture.md](docs/architecture.md) and
 
 Requires Python 3.10+.
 
-\`\`\`bash
+```bash
 python -m venv .venv
 .venv\\Scripts\\activate
 python -m pip install -e ".[runtime]"
 uvicorn main:app --host 127.0.0.1 --port 5001
-\`\`\`
+```
 
 The default path is deterministic and does not require a network call. To try
-the optional model-backed adapters, set \`OPENAI_API_KEY\` in your shell. Never
-commit credentials. Copy \`.env.example\` only as a reference; the application
+the optional model-backed adapters, set `OPENAI_API_KEY` in your shell. Never
+commit credentials. Copy `.env.example` only as a reference; the application
 reads process environment variables.
 
 ## Test
 
-\`\`\`bash
+```bash
 python -m pip install -e ".[dev]"
 pytest -q
 ruff check --select F .
-\`\`\`
+```
 
 Tests cover domain rules, deterministic routing and analytics, and API health.
-\`scripts/manual_navigation_check.py\` is an opt-in probe for an already-running
+`scripts/manual_navigation_check.py` is an opt-in probe for an already-running
 server and is not part of the automated suite.
 
 ## Data and limitations
 
-- \`data/*.csv\` is mutable simulator state, not production telemetry.
+- `data/*.csv` is mutable simulator state, not production telemetry.
 - Routing uses Euclidean distance and fixed speed/energy assumptions.
 - “AI insights” in offline mode are deterministic summaries, not predictions.
 - There is no authentication, durable database, hardware protocol, collision

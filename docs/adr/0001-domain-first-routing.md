@@ -11,8 +11,8 @@ between business rules and external model SDKs.
 
 ## Decision
 
-\`FleetOrchestrationService\` consumes \`RouteOptimizerPort\` and
-\`AIAnalyticsPort\`. The default adapters are deterministic heuristics. Optional
+`FleetOrchestrationService` consumes `RouteOptimizerPort` and
+`AIAnalyticsPort`. The default adapters are deterministic heuristics. Optional
 OpenAI adapters remain replaceable composition-root choices.
 
 ## Consequences
