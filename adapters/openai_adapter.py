@@ -5,12 +5,11 @@ Adaptador para integración con OpenAI GPT-4o mini
 
 import openai
 import json
-import math
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from datetime import datetime
 import random
 
-from domain.entities import AGV, Task, Route, Position, AGVStatus, TaskPriority
+from domain.entities import AGV, Task, Route, Position, AGVStatus
 from domain.ports import RouteOptimizerPort, AIAnalyticsPort
 
 
@@ -19,8 +18,8 @@ class OpenAIRouteOptimizer(RouteOptimizerPort):
     Optimizador de rutas usando OpenAI GPT-4o mini
     """
 
-    def __init__(self, api_key: str):
-        self.client = openai.OpenAI(api_key=api_key)
+    def __init__(self, api_key: str | None = None, client=None):
+        self.client = client or openai.OpenAI(api_key=api_key)
         self.model = "gpt-4o-mini"
 
     def optimize_route(self, agv: AGV, task: Task) -> Route:
@@ -89,6 +88,7 @@ class OpenAIRouteOptimizer(RouteOptimizerPort):
                 waypoints=waypoints,
                 estimated_time=route_data["estimated_time"],
                 total_distance=route_data["total_distance"],
+                fuel_consumption=route_data.get("energy_consumption", 0.0),
                 created_at=datetime.now(),
             )
 
@@ -186,6 +186,7 @@ class OpenAIRouteOptimizer(RouteOptimizerPort):
                         waypoints=waypoints,
                         estimated_time=route_info["estimated_time"],
                         total_distance=route_info["total_distance"],
+                        fuel_consumption=route_info.get("energy_consumption", 0.0),
                         created_at=datetime.now(),
                     )
                     optimized_routes[agv_id] = route
@@ -291,6 +292,7 @@ class OpenAIRouteOptimizer(RouteOptimizerPort):
             waypoints=waypoints,
             estimated_time=estimated_time,
             total_distance=total_distance,
+            fuel_consumption=total_distance / 100,
             created_at=datetime.now(),
         )
 
@@ -300,8 +302,8 @@ class OpenAIAnalytics(AIAnalyticsPort):
     Servicio de análisis e insights usando OpenAI GPT-4o mini
     """
 
-    def __init__(self, api_key: str):
-        self.client = openai.OpenAI(api_key=api_key)
+    def __init__(self, api_key: str | None = None, client=None):
+        self.client = client or openai.OpenAI(api_key=api_key)
         self.model = "gpt-4o-mini"
 
     def analyze_fleet_performance(

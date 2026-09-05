@@ -3,21 +3,22 @@ Main API - AGV Fleet Commander
 FastAPI application para el sistema de gestión de flota AGV
 """
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-from typing import List, Dict, Any, Optional
+from typing import Optional
 from datetime import datetime
 import asyncio
 import uvicorn
 
 from config import config
-from domain.entities import Position, TaskPriority
+from domain.entities import Position
 from domain.services import FleetOrchestrationService, AGVControlService
 from adapters.data_adapter import CSVDataAdapter, SimulationDataUpdater
 from adapters.openai_adapter import OpenAIRouteOptimizer, OpenAIAnalytics
+from adapters.heuristic_adapter import HeuristicAnalytics, HeuristicRouteOptimizer
 from adapters.notification_adapter import LoggingNotificationAdapter
 
 
@@ -97,9 +98,8 @@ async def startup_event():
             route_optimizer = OpenAIRouteOptimizer(config.openai.api_key)
             ai_analytics = OpenAIAnalytics(config.openai.api_key)
         else:
-            # Usar adaptadores mock o básicos
-            route_optimizer = None
-            ai_analytics = None
+            route_optimizer = HeuristicRouteOptimizer()
+            ai_analytics = HeuristicAnalytics()
 
         # Inicializar servicios de dominio
         fleet_service = FleetOrchestrationService(

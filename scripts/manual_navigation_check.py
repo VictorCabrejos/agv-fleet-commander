@@ -4,7 +4,6 @@ Script de prueba para verificar navegación entre dashboard y landing page
 """
 
 import requests
-import time
 
 
 def test_navigation():
