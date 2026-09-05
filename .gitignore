@@ -149,6 +149,8 @@ logs/*.log
 data/*.backup
 *.tmp
 .env.local
+.env.*
+!.env.example
 
 # OpenAI API Key (security)
 .env

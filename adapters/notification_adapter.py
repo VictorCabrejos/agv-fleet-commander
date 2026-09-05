@@ -8,7 +8,6 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, List
-from dataclasses import asdict
 
 from domain.ports import NotificationPort
 

@@ -3,14 +3,13 @@ Data Adapter - AGV Fleet Commander
 Adaptador para manejo de datos (simula base de datos en memoria)
 """
 
-import json
 import csv
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional
 from datetime import datetime, timedelta
 import random
 from pathlib import Path
 
-from domain.entities import AGV, Task, Route, Position, AGVStatus, TaskPriority
+from domain.entities import AGV, Task, Position, AGVStatus, TaskPriority
 from domain.ports import AGVRepositoryPort, TaskRepositoryPort
 
 

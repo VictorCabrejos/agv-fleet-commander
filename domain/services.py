@@ -3,12 +3,10 @@ Domain Services - AGV Fleet Commander
 Arquitectura Hexagonal - Lógica de negocio pura
 """
 
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Any
 from datetime import datetime, timedelta
 from domain.entities import (
-    AGV,
     Task,
-    Route,
     FleetMetrics,
     Position,
     AGVStatus,
