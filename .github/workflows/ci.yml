@@ -3,19 +3,58 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  test:
+  semantics:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.11", "3.12"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python }}
           cache: pip
       - run: python -m pip install -e ".[runtime,dev]"
-      - run: ruff check --select F .
-      - run: pytest -q
+      - run: python -m ruff check agv_fleet main.py tests
+      - name: Semantic, HTTP, persistence and failure regressions
+        run: python -m pytest --cov=agv_fleet --cov=main --cov-report=term-missing --cov-fail-under=85
+      - name: Deterministic replay evidence
+        run: python -m agv_fleet.replay
+      - name: Build distribution
+        run: python -m build
+      - name: Verify installed wheel outside checkout
+        shell: bash
+        run: |
+          python -m venv /tmp/agv-wheel
+          /tmp/agv-wheel/bin/python -m pip install dist/*.whl
+          cd /tmp
+          /tmp/agv-wheel/bin/python -m agv_fleet.replay
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e ".[runtime,openai,dev,audit]"
+      - name: Audit resolved dependencies
+        run: |
+          python -m pip freeze --exclude-editable > /tmp/agv-audit.txt
+          python -m pip_audit --strict --disable-pip --no-deps -r /tmp/agv-audit.txt --progress-spinner off
+      - name: Scan the complete proposed tracked tree for secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz --output /tmp/gitleaks.tar.gz
+          echo '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  /tmp/gitleaks.tar.gz' | sha256sum --check
+          mkdir /tmp/agv-scanner /tmp/agv-tracked-tree
+          tar -xzf /tmp/gitleaks.tar.gz -C /tmp/agv-scanner
+          git archive HEAD | tar -x -C /tmp/agv-tracked-tree
+          /tmp/agv-scanner/gitleaks dir /tmp/agv-tracked-tree --redact --no-banner
