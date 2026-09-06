@@ -1,22 +1,9 @@
-# ADR 0001: Keep routing behind a domain port
+# ADR 1: deterministic domain authority and atomic simulation state
 
-- Status: accepted
-- Date: 2026-09-05
+Status: accepted for remediation branch.
 
-## Context
+The prior pipeline mutated assignments before computing routes, saved task and vehicle separately, and simulated motion toward delivery without using the generated route. Additional checks around those paths would leave conflicting state owners.
 
-Portfolio evaluation must be possible without credentials, paid calls, or
-non-deterministic model output. The simulator also needs a clear separation
-between business rules and external model SDKs.
+Decision: replace them with one typed state model and one command engine. Planners are proposal-only. A bounded cardinal grid makes obstacle, pickup and energy constraints executable and inspectable. A single SQLite snapshot transaction stores reciprocal references, cursor, phase, trace and receipt together. Detached snapshots and revision comparison prevent partial mutation and stale-plan acceptance.
 
-## Decision
-
-`FleetOrchestrationService` consumes `RouteOptimizerPort` and
-`AIAnalyticsPort`. The default adapters are deterministic heuristics. Optional
-OpenAI adapters remain replaceable composition-root choices.
-
-## Consequences
-
-Core workflows and tests run offline. Heuristics are deliberately simple and
-must not be represented as industrial route optimization or predictive
-maintenance. Any future provider adapter must preserve the same port contracts.
+Consequences: restart and failure behavior can be tested without robotics hardware or a provider. The old CSV datasets remain inert and recoverable. APIs intentionally change to explicit plan/assign/tick/stop/resume commands. The design is limited to a small single-host simulator with conservative cell reservations; it does not claim enterprise fleet scheduling or production autonomy.

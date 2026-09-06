@@ -1,39 +1,35 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=78,<84"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "agv-fleet-commander"
-version = "0.2.0"
-description = "Educational AGV fleet orchestration simulator"
+version = "1.0.0"
+description = "Deterministic AI-assisted fleet simulator with validated decisions and atomic state."
 readme = "README.md"
-requires-python = ">=3.10"
-license = { text = "MIT" }
+requires-python = ">=3.11"
+license = "MIT"
 dependencies = []
 
 [project.optional-dependencies]
-runtime = [
-  "fastapi>=0.104,<1",
-  "openai>=2,<3",
-  "pandas>=2,<3",
-  "python-multipart>=0.0.9,<1",
-  "uvicorn[standard]>=0.24,<1",
-]
-dev = [
-  "httpx>=0.25,<1",
-  "pytest>=7.4,<9",
-  "pytest-asyncio>=0.21,<1",
-  "ruff>=0.11,<1",
-]
+runtime = ["fastapi>=0.120,<1", "uvicorn>=0.35,<1"]
+openai = ["openai>=2,<3"]
+dev = ["pytest>=8,<10", "pytest-cov>=6,<8", "httpx>=0.28,<1", "ruff>=0.11,<1", "build>=1.2,<2"]
+audit = ["pip-audit>=2.9,<3"]
+
+[tool.setuptools]
+py-modules = ["main"]
+
+[tool.setuptools.packages.find]
+include = ["agv_fleet*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-
-[tool.setuptools]
-py-modules = ["config", "main"]
-
-[tool.setuptools.packages.find]
-include = ["adapters*", "domain*"]
+addopts = "-q --strict-markers"
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py311"
+line-length = 110
+
+[tool.ruff.lint]
+select = ["F"]
