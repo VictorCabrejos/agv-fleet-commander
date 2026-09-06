@@ -167,6 +167,30 @@ def test_stale_proposal_and_duplicate_command():
     assert e.snapshot().revision == 1
 
 
+def test_uncertain_acknowledgment_replays_durable_receipt_after_restart(tmp_path):
+    path = tmp_path / "fleet.db"
+    store = SQLiteStore(path, demo_state())
+    e = FleetEngine(store)
+    plan = e.plan()
+    original_commit = store.commit
+
+    def committed_but_acknowledgment_lost(expected, state):
+        original_commit(expected, state)
+        raise StorageError("Synthetic connection loss after durable commit")
+
+    store.commit = committed_but_acknowledgment_lost
+    with pytest.raises(StorageError):
+        e.assign("uncertain", plan["revision"], plan["assignments"])
+    e = FleetEngine(SQLiteStore(path, demo_state()))
+    receipt = e.assign("uncertain", plan["revision"], plan["assignments"])
+    assert receipt["assigned"] == 1 and receipt["revision"] == 1
+    first = e.tick("tick-once")
+    e = FleetEngine(SQLiteStore(path, demo_state()))
+    assert e.tick("tick-once") == first
+    assert e.snapshot().vehicles["A"].cursor == 1
+    assert sum(ev["kind"] == "assigned" for ev in e.snapshot().events) == 1
+
+
 def test_commit_failure_has_no_acknowledgment_or_partial_state(tmp_path):
     store = SQLiteStore(tmp_path / "fleet.db", demo_state())
     e = FleetEngine(store)
